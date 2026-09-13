@@ -1,0 +1,23 @@
+# Каталоги сборки CMake
+build*/
+out/
+cmake-build-*/
+
+# Сгенерированная документация и отчёты
+doc/
+coverage_report/
+*.info
+*.filtered.info
+
+# Catch2 через FetchContent (скачивается при сборке)
+_deps/
+
+# Файлы IDE
+.idea/
+.vscode/
+.vs/
+*.swp
+
+# Системные файлы
+.DS_Store
+Thumbs.db
