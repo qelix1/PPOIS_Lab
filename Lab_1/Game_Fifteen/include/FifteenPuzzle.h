@@ -20,9 +20,9 @@
 
 class FifteenPuzzle {
 public:
-    static const int SIZE  = 4;   ///< Размер стороны поля.
-    static const int CELLS = 16;  ///< Общее число клеток (SIZE * SIZE).
-    static const int EMPTY = 0;   ///< Код пустой клетки.
+    static constexpr int SIZE  = 4;   
+    static constexpr int CELLS = 16;
+    static constexpr int EMPTY = 0;
 
     /// @brief Создаёт головоломку со случайной решаемой расстановкой.
     FifteenPuzzle();

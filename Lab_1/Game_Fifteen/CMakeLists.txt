@@ -7,7 +7,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 add_executable(puzzle_app src/main.cpp)
 
 # --- раскомментировать, когда появится src/FifteenPuzzle.cpp ---
-add_library(puzzle_lib src/Fifteen.cpp)
+add_library(puzzle_lib src/FifteenPuzzle.cpp)
 target_include_directories(puzzle_lib PUBLIC include)
 target_link_libraries(puzzle_app PRIVATE puzzle_lib)
 
