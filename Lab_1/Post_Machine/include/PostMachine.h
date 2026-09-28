@@ -144,6 +144,8 @@ private:
      * @throw std::runtime_error Если синтаксис команды неверен.
      */
     static PostCommand parseCommand(const std::string& line);
+    // Разрешаем свободной функции operator>> доступ к приватным полям
+    friend std::istream& operator>>(std::istream& is, PostMachine& machine);
 };
 
 /**
@@ -160,4 +162,4 @@ std::ostream& operator<<(std::ostream& os, const PostMachine& machine);
  */
 std::istream& operator>>(std::istream& is, PostMachine& machine);
 
-#endif // POST_MACHINE_H
+#endif 

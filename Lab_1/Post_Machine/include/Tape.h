@@ -123,4 +123,4 @@ std::ostream& operator<<(std::ostream& os, const Tape& tape);
  */
 std::istream& operator>>(std::istream& is, Tape& tape);
 
-#endif // TAPE_H
+#endif 
