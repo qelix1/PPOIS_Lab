@@ -5,7 +5,7 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 option(ENABLE_COVERAGE "Покрытие тестами (gcov)" OFF)
 add_executable(post_app src/main.cpp)
-#[[add_library(post_lib src/Tape.cpp src/PostMachine.cpp)
+add_library(post_lib src/Tape.cpp src/PostMachine.cpp)
 target_include_directories(post_lib PUBLIC include)
 
 
@@ -30,4 +30,3 @@ if(ENABLE_COVERAGE)
     target_compile_options(post_tests PRIVATE --coverage)
     target_link_options(post_tests PRIVATE --coverage)
 endif()
-]]
