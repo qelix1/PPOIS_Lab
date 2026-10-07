@@ -6,8 +6,6 @@
 #include <algorithm>
 #include <cctype>
 
-// ================= PostCommand =================
-
 bool PostCommand::operator==(const PostCommand& rhs) const {
     return type == rhs.type && arg1 == rhs.arg1 && arg2 == rhs.arg2;
 }
@@ -27,8 +25,6 @@ std::ostream& operator<<(std::ostream& os, const PostCommand& cmd) {
     }
     return os;
 }
-
-// ================= PostMachine =================
 
 // Вспомогательная функция для удаления пробелов по краям строки
 static std::string trim(const std::string& str) {
@@ -108,7 +104,17 @@ void PostMachine::loadProgram(const std::string& filename) {
         }
 
         std::string numStr = trim(trimmed.substr(0, dotPos));
-        int num = std::stoi(numStr);
+        int num = -1;
+        try {
+            std::size_t parsed = 0;
+            num = std::stoi(numStr, &parsed);
+            if (parsed != numStr.size()) {
+                throw std::invalid_argument("trailing characters");
+            }
+        } catch (const std::exception&) {
+            // Нарушен контракт: loadProgram должен бросать только std::runtime_error
+            throw std::runtime_error("Invalid command number: " + line);
+        }
         if (num != expectedNum) {
             throw std::runtime_error("Invalid command numbering. Expected " + std::to_string(expectedNum) + ", got " + std::to_string(num));
         }
