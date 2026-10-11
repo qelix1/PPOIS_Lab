@@ -22,7 +22,6 @@ add_library(puzzle_lib src/FifteenPuzzle.cpp)
 target_include_directories(puzzle_lib PUBLIC include)
 target_link_libraries(puzzle_app PRIVATE puzzle_lib)
 
-# --- раскомментировать, когда появятся тесты и tests/test_fifteen_puzzle.cpp ---
 include(FetchContent)
 FetchContent_Declare(catch2
     GIT_REPOSITORY https://github.com/catchorg/Catch2.git
