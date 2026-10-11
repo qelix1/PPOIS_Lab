@@ -3,8 +3,7 @@
 #include <sstream>
 #include <iostream>
 #include <stdexcept>
-#include <algorithm>
-#include <cctype>
+
 
 bool PostCommand::operator==(const PostCommand& rhs) const {
     return type == rhs.type && arg1 == rhs.arg1 && arg2 == rhs.arg2;
