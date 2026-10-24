@@ -162,7 +162,7 @@ jobs:
           cmake -S . -B build-release \
             -DCMAKE_BUILD_TYPE=Release \
             -DCMAKE_CXX_STANDARD=${{ env.CXX_STANDARD }} \
-            -DCMAKE_INSTALL_PREFIX=install \
+            -DCMAKE_INSTALL_PREFIX=/usr/local \
             -G Ninja
 
       - name: Build Release
@@ -178,31 +178,33 @@ jobs:
         working-directory: ${{ matrix.project.dir }}
         run: |
           APP_PATH="${{ runner.temp }}/${{ matrix.project.name }}/usr/local/bin/${{ matrix.project.app }}"
-          if [ -f "$APP_PATH" ]; then
-            # Create a self-contained bundle directory
-            BUNDLE_DIR="${{ runner.temp }}/${{ matrix.project.name }}-bundle"
-            mkdir -p "$BUNDLE_DIR/bin"
-            cp "$APP_PATH" "$BUNDLE_DIR/bin/"
-            # Copy required shared libs (excluding system libs)
-            ldd "$APP_PATH" | grep "=> /" | awk '{print $3}' | while read lib; do
-              if [[ "$lib" == /usr/lib* ]] || [[ "$lib" == /lib* ]]; then
-                continue
-              fi
-              cp "$lib" "$BUNDLE_DIR/bin/" 2>/dev/null || true
-            done
-            # Create launch script that sets LD_LIBRARY_PATH
-            cat > "$BUNDLE_DIR/${{ matrix.project.name }}.sh" << 'EOF'
+          if [ ! -f "$APP_PATH" ]; then
+            echo "::error::Binary not found at $APP_PATH"
+            exit 1
+          fi
+          # Create a self-contained bundle directory
+          BUNDLE_DIR="${{ runner.temp }}/${{ matrix.project.name }}-bundle"
+          mkdir -p "$BUNDLE_DIR/bin"
+          cp "$APP_PATH" "$BUNDLE_DIR/bin/"
+          # Copy required shared libs (excluding system libs)
+          ldd "$APP_PATH" | grep "=> /" | awk '{print $3}' | while read lib; do
+            if [[ "$lib" == /usr/lib* ]] || [[ "$lib" == /lib* ]]; then
+              continue
+            fi
+            cp "$lib" "$BUNDLE_DIR/bin/" 2>/dev/null || true
+          done
+          # Create launch script that sets LD_LIBRARY_PATH
+          cat > "$BUNDLE_DIR/${{ matrix.project.name }}.sh" << 'EOF'
           #!/bin/bash
           SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
           export LD_LIBRARY_PATH="$SCRIPT_DIR/bin:${LD_LIBRARY_PATH}"
           exec "$SCRIPT_DIR/bin/${{ matrix.project.app }}" "$@"
           EOF
-            chmod +x "$BUNDLE_DIR/${{ matrix.project.name }}.sh"
-            # Create tarball
-            cd "${{ runner.temp }}"
-            tar -czf "${{ matrix.project.name }}-linux-x64.tar.gz" -C "$BUNDLE_DIR" .
-            echo "ARTIFACT_PATH=${{ runner.temp }}/${{ matrix.project.name }}-linux-x64.tar.gz" >> $GITHUB_OUTPUT
-          fi
+          chmod +x "$BUNDLE_DIR/${{ matrix.project.name }}.sh"
+          # Create tarball
+          cd "${{ runner.temp }}"
+          tar -czf "${{ matrix.project.name }}-linux-x64.tar.gz" -C "$BUNDLE_DIR" .
+          echo "ARTIFACT_PATH=${{ runner.temp }}/${{ matrix.project.name }}-linux-x64.tar.gz" >> $GITHUB_OUTPUT
         id: bundle
 
       - name: Upload release artifact
