@@ -46,6 +46,9 @@ add_executable(post_tests
 target_link_libraries(post_tests PRIVATE Catch2::Catch2WithMain post_lib)
 add_test(NAME post_tests COMMAND post_tests)
 
+# Install targets
+install(TARGETS post_app DESTINATION bin)
+
 if(ENABLE_COVERAGE)
     find_program(LCOV_EXECUTABLE lcov)
     find_program(GENHTML_EXECUTABLE genhtml)

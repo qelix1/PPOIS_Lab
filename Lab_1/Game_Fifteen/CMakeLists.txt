@@ -22,6 +22,9 @@ add_library(puzzle_lib src/FifteenPuzzle.cpp)
 target_include_directories(puzzle_lib PUBLIC include)
 target_link_libraries(puzzle_app PRIVATE puzzle_lib)
 
+# Install targets
+install(TARGETS puzzle_app DESTINATION bin)
+
 include(FetchContent)
 FetchContent_Declare(catch2
     GIT_REPOSITORY https://github.com/catchorg/Catch2.git
@@ -31,4 +34,26 @@ enable_testing()
 add_executable(puzzle_tests tests/test_fifteen_puzzle.cpp)
 target_link_libraries(puzzle_tests PRIVATE Catch2::Catch2WithMain puzzle_lib)
 add_test(NAME puzzle_tests COMMAND puzzle_tests)
+
+if(ENABLE_COVERAGE)
+    find_program(LCOV_EXECUTABLE lcov)
+    find_program(GENHTML_EXECUTABLE genhtml)
+    if(LCOV_EXECUTABLE AND GENHTML_EXECUTABLE)
+        # cmake --build <build-dir> --target coverage
+        add_custom_target(coverage
+            COMMAND ${CMAKE_COMMAND}
+                    -DLCOV=${LCOV_EXECUTABLE}
+                    -DGENHTML=${GENHTML_EXECUTABLE}
+                    -DTESTS=$<TARGET_FILE:puzzle_tests>
+                    -DBUILD_DIR=${CMAKE_BINARY_DIR}
+                    -DSRC_DIR=${CMAKE_CURRENT_SOURCE_DIR}
+                    -P ${CMAKE_CURRENT_SOURCE_DIR}/cmake/run_coverage.cmake
+            DEPENDS puzzle_tests
+            WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+            COMMENT "Генерация отчёта покрытия (lcov)"
+            VERBATIM)
+    else()
+        message(STATUS "lcov/genhtml не найдены — цель coverage недоступна")
+    endif()
+endif()
 
